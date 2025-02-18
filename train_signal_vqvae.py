@@ -7,9 +7,10 @@ from vis import vis
 
 # parameters
 device="cuda"
-batch_size = 256
+batch_size = 1024
 LR = 1e-3
-patch_size = 100
+patch_size = 20
+epochs = 10
 
 # Load Data
 X_train = torch.load("data/X_train.pt", weights_only=True).to(device)[:, :, :, :1000]
@@ -27,7 +28,9 @@ signal_test_loader = DataLoader(signal_test_set, batch_size=batch_size, shuffle=
 
 model = SignalVectorQuantizedVAE(patch_size=patch_size).to(device)
 opt = torch.optim.Adam(model.parameters(), lr=LR, amsgrad=True)
-train(model, signal_train_loader, opt, device)
+for epoch in range(epochs):
+    print("start training epoch", str(epoch))
+    train(model, signal_train_loader, opt, device)
 test(model, signal_test_loader, device)
 torch.save(model.state_dict(), "signal-vqvae.pth")
 
